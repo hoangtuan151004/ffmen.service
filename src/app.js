@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 
 const authRoutes = require("./routes/authRoutes");
-const indexRouter = require("./routes/index");
+
 const usersRouter = require("./routes/users");
 const productsRouter = require("./routes/products");
 const categoriesRouter = require("./routes/categories");
@@ -43,7 +43,6 @@ app.use(authMiddleware);
 //định nghĩa routing
 app.use("/api/auth", authRoutes); // Không yêu cầu xác thực
 app.use(authMiddleware); // Áp dụng cho tất cả các tuyến sau
-app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/products", productsRouter);
 app.use("/categories", categoriesRouter);

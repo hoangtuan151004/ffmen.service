@@ -1,6 +1,6 @@
 //thực hiện thao tác CRUD với collection categories
-const productModel = require("./product.model");
-const categoryModel = require("./category.model");
+const productModel = require("../models/product.model");
+const categoryModel = require("../models/category.model");
 
 module.exports = {
   getCategoryById,

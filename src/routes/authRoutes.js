@@ -5,7 +5,7 @@ const {
   register,
   getTotalUsers,
   getAllUsers,
-} = require("../controllers/authController");
+} = require("../controllers/authController.controller");
 
 router.post("/register", (req, res, next) => {
   register(req, res, next);

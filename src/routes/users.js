@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../mongo/user.controller");
+const userController = require("../controllers/user.controller");
 // const jwt = require('jsonwebtoken');
 
 // Lấy danh sách user
@@ -79,41 +79,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-//api dang nhap
-// http://localhost:3000/users/login
-// router.post('/login', async(req, res)=>{
-//   try {
-//     const {name, password} = req.body
-//     const result = await userController.login(req.body)
-
-//     return res.status(200).json(result)
-//   } catch (error) {
-//     console.log('lỗi đăng nhập', error);
-//     return res.status(500).json({mess: error})
-//   }
-// })
-
-// router.post('/login', async (req, res) => {
-//   try {
-//     const { name, password } = req.body;
-//     const result = await userController.login(req.body);
-
-//     if (result) {
-//       const access_token = jwt.sign({ _id: result._id, name: result.name, role: result.role }, 'chanhthi', { expiresIn: 60 });
-//       const refresh_token = jwt.sign({ _id: result._id, name: result.name, role: result.role }, 'chanhthi', { expiresIn: 90 * 24 * 60 * 60 });
-//       res.status(200).json({
-//         ...result,
-//         access_token,
-//         refresh_token
-//       });
-//     } else {
-//       res.status(401).json({ error: 'Sai tên đăng nhập hoặc mật khẩu' });
-//     }
-//   } catch (error) {
-//     console.log('lỗi đăng nhập', error);
-//     return res.status(500).json({ mess: error.message });
-//   }
-// });
 router.post("/login", async (req, res) => {
   try {
     const { name, password } = req.body;

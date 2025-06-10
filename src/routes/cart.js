@@ -8,9 +8,9 @@ const {
   updateCartItem,
   deleteCartItem,
   clearCart,
-} = require("../mongo/cart.controller");
-const Cart = require("../mongo/cart.model");
-const Product = require("../mongo/product.model");
+} = require("../controllers/cart.controller");
+const Cart = require("../models/cart.model");
+const Product = require("../models/product.model");
 
 // GET: Lấy giỏ hàng của người dùng
 router.get("/get", authenticateToken, async (req, res) => {

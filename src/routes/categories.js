@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const categoryController = require("../mongo/category.controller");
+const categoryController = require("../controllers/category.controller");
 
 //lấy tất cả danh mục
 // http:/localhost:3000/categories/
