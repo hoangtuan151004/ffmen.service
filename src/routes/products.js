@@ -24,16 +24,31 @@ router.post("/add", upload.array("imgs", 10), async (req, res) => {
       name,
       price,
       price2,
-
       quantity,
       shortDescription,
       longDescription,
       categoryId,
       categoryName,
+      variants, // 👈 nhận từ req.body
     } = req.body;
+
     const imgs = await productController.uploadImgs(req.files, req);
+
     console.log("BODY:", req.body);
     console.log("FILES:", req.files);
+
+    // Parse variants nếu có
+    let parsedVariants = [];
+    if (variants) {
+      try {
+        parsedVariants = JSON.parse(variants);
+        if (!Array.isArray(parsedVariants)) {
+          throw new Error("Variants phải là mảng JSON");
+        }
+      } catch (err) {
+        throw new Error("Trường variants không hợp lệ. Phải là chuỗi JSON.");
+      }
+    }
 
     const newProduct = {
       name,
@@ -47,7 +62,9 @@ router.post("/add", upload.array("imgs", 10), async (req, res) => {
         categoryId: new mongoose.Types.ObjectId(categoryId),
         categoryName,
       },
+      variants: parsedVariants, // 👈 gán vào đây
     };
+
     const product = await productController.insert(newProduct);
     res.status(200).json(product);
   } catch (error) {
@@ -106,10 +123,15 @@ router.get("/total-products", async (req, res) => {
   }
 });
 
-// GET tất cả sản phẩm
+// GET tất cả sản phẩm với phân trang
 router.get("/all", async (req, res) => {
   try {
-    const pros = await productController.getpros();
+    // Lấy page và limit từ query, mặc định nếu không có
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const pros = await productController.getpros(page, limit);
+
     console.log("Dữ liệu trả về:", pros);
     res.status(200).json(pros);
   } catch (error) {

@@ -51,8 +51,10 @@ async function insert(body) {
       shortDescription,
       longDescription,
       category,
+      variants,
     } = body;
 
+    // Check thiếu thông tin
     if (
       !name ||
       !imgs ||
@@ -62,19 +64,54 @@ async function insert(body) {
       !price ||
       !price2 ||
       !category
-    )
+    ) {
       throw new Error("Thông tin sản phẩm không đầy đủ");
+    }
 
-    if (!Array.isArray(imgs) || imgs.some((img) => !img.url))
+    if (!Array.isArray(imgs) || imgs.some((img) => !img.url)) {
       throw new Error("Ảnh không hợp lệ. Mỗi ảnh phải có trường 'url'.");
+    }
 
-    // Xử lý category nhận vào là object hoặc id
+    // Xử lý category
     let categoryId = category;
     if (typeof category === "object" && category.categoryId) {
       categoryId = category.categoryId;
     }
     const categoryFind = await categoryModel.findById(categoryId);
     if (!categoryFind) throw new Error("Không tìm thấy danh mục");
+
+    // Validate variants nếu có
+    let formattedVariants = [];
+    if (variants && Array.isArray(variants)) {
+      formattedVariants = variants.map((variant) => {
+        const { attributes, price, quantity } = variant;
+
+        if (
+          !attributes ||
+          typeof attributes.size !== "string" ||
+          typeof attributes.color !== "string"
+        ) {
+          throw new Error(
+            "Mỗi biến thể phải có attributes đầy đủ: size & color"
+          );
+        }
+
+        if (typeof price !== "number" || typeof quantity !== "number") {
+          throw new Error("Mỗi biến thể phải có price và quantity kiểu số");
+        }
+
+        return {
+          attributes: {
+            size: attributes.size,
+            color: attributes.color,
+          },
+          price,
+          quantity,
+          sku: variant.sku || "",
+          img: variant.img || "",
+        };
+      });
+    }
 
     const proNew = new productModel({
       name,
@@ -84,6 +121,7 @@ async function insert(body) {
       price,
       price2,
       quantity,
+      variants: formattedVariants,
       category: {
         categoryId: categoryFind._id,
         categoryName: categoryFind.name,
@@ -100,14 +138,24 @@ async function insert(body) {
 /**
  * Lấy tất cả sản phẩm (kèm tổng số lượng và phân trang cơ bản)
  */
-async function getpros() {
+async function getpros(page = 1, limit = 10) {
   try {
-    const result = await productModel.find();
-    console.log("Số sản phẩm tìm thấy:", result.length);
+    const skip = (page - 1) * limit;
+
+    // Đếm tổng sản phẩm trước
+    const totalItems = await productModel.countDocuments();
+
+    // Lấy sản phẩm theo trang
+    const result = await productModel
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // Tuỳ chọn, sắp xếp mới nhất
+
     return new ProductResponse(
-      result.length,
-      Math.ceil(result.length / 10),
-      1,
+      totalItems,
+      Math.ceil(totalItems / limit),
+      page,
       result
     );
   } catch (error) {

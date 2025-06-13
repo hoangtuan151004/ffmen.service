@@ -16,6 +16,21 @@ const productSchema = new Schema({
   price: { type: Number, required: true },
   price2: { type: Number, required: true },
   quantity: { type: Number, required: true },
+  variants: {
+    type: [
+      {
+        attributes: {
+          size: { type: String, required: true },
+          color: { type: String, required: true },
+        },
+        price: { type: Number, required: true },
+        quantity: { type: Number, required: true },
+        sku: { type: String },
+        img: { type: String },
+      },
+    ],
+    default: [],
+  },
   category: {
     type: {
       categoryId: { type: ObjectId, required: true },
