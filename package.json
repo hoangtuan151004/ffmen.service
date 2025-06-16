@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node src/bin/www",
-    "dev": "nodemon src/bin/www"
+    "dev": "ts-node -r tsconfig-paths/register src/index.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -28,7 +28,15 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/debug": "^4.1.12",
+    "@types/morgan": "^1.9.10",
     "@types/multer": "^1.4.11",
-    "nodemon": "^3.1.7"
+    "@types/node": "^24.0.1",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3"
   }
 }

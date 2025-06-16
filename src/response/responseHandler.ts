@@ -1,4 +1,21 @@
-const responseHandler = {
+import { Response } from "express";
+
+interface ResponseHandler {
+  success: (res: Response, data: any, message?: string) => void;
+  created: (res: Response, data: any, message?: string) => void;
+  noContent: (res: Response, message?: string) => void;
+  badRequest: (res: Response, message?: string, errors?: any[]) => void;
+  notFound: (res: Response, message?: string, resource?: string) => void;
+  unauthorized: (res: Response, message?: string) => void;
+  forbidden: (res: Response, message?: string) => void;
+  internalServerError: (
+    res: Response,
+    message?: string,
+    details?: Record<string, any>
+  ) => void;
+}
+
+export const responseHandler: ResponseHandler = {
   success: (res, data, message = "Success") => {
     res.status(200).json({
       status: 200,
@@ -17,8 +34,8 @@ const responseHandler = {
     });
   },
 
-  noContent: (res, message = "No Content") => {
-    res.status(204).send(); // Không có nội dung trả về
+  noContent: (res, _message = "No Content") => {
+    res.status(204).send();
   },
 
   badRequest: (res, message = "Bad Request", errors = []) => {
@@ -67,5 +84,3 @@ const responseHandler = {
     });
   },
 };
-
-module.exports = responseHandler;
