@@ -129,7 +129,6 @@ export async function insert(body: InsertProductInput): Promise<IProduct> {
       shortDescription,
       longDescription,
       isVisible: true,
-      isDeleted: false,
     });
 
     return await proNew.save();
@@ -195,15 +194,36 @@ export async function getpros(page = 1, limit = 10) {
 //   }
 // }
 
-// export async function getAll() {
-//   try {
-//     const result = await productModel.find();
-//     return { totalProducts: result.length, products: result };
-//   } catch (error: any) {
-//     console.error("Lỗi lấy danh sách sản phẩm", error);
-//     throw error;
-//   }
-// }
+export async function getAllProducts(page = 1, limit = 10) {
+  try {
+    const skip = (page - 1) * limit;
+
+    // Tổng số sản phẩm
+    const totalProducts = await productModel.countDocuments({
+      isVisible: true,
+    });
+
+    // Lấy danh sách sản phẩm theo phân trang
+    const products: IProduct[] = await productModel
+      .find({ isVisible: true })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate("category");
+
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    return new ProductResponse<IProduct[]>(
+      totalProducts,
+      totalPages,
+      page,
+      products
+    );
+  } catch (error: any) {
+    console.error("❌ Lỗi lấy danh sách sản phẩm:", error);
+    throw error;
+  }
+}
 
 // export async function getByKey(key: string, value: any) {
 //   try {
