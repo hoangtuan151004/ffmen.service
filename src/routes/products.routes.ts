@@ -22,7 +22,6 @@ router.post(
     }
   }
 );
-
 router.post("/", upload.array("files", 10), async (req, res) => {
   try {
     const imgs = await uploadImgs(req.files as Express.Multer.File[], req);

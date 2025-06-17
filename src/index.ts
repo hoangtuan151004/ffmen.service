@@ -5,6 +5,7 @@ import logger from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoConnect from "./config/MongoConnect";
+import authRouter from "@/routes/auth.routes";
 // import authMiddleware from "./middlewares/authMiddleware";
 // import errorHandler from "./middlewares/errorHandler";
 // import authRoutes from "./routes/authRoutes";
@@ -14,33 +15,22 @@ import mongoConnect from "./config/MongoConnect";
 import productRouter from "./routes/products.routes";
 
 dotenv.config();
+const app = express();
 
-const app: Application = express();
-
-// View engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "hbs");
-app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use("/", express.static("public"));
+
+// ✅ đúng cách
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server chạy tại http://localhost:${PORT}`);
 });
-// CORS config
-const corsOptions = {
-  origin: ["http://localhost:3001", "http://your-other-allowed-domain.com"],
-  credentials: true,
-};
-app.use(cors(corsOptions));
 
 // Kết nối DB
 mongoConnect();
-
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
 // Routing không cần auth
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRouter);
 
 // Apply auth middleware cho tất cả route sau
 // app.use(authMiddleware);
