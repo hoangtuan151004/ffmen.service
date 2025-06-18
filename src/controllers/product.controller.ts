@@ -4,6 +4,8 @@ import {
   insertProduct,
   getAllProductsService,
   getProductById,
+  updateProductById,
+  deleteProductById,
 } from "@/services/product.service";
 import { Request, Response } from "express";
 
@@ -45,3 +47,34 @@ export const getProductDetail = async (req: Request, res: Response) => {
     res.status(404).json({ message: error.message || "Lỗi không xác định" });
   }
 };
+export async function updateProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const data = req.body;
+
+    const updated = await updateProductById(productId, data);
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật sản phẩm thành công",
+      data: updated,
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+}
+export async function deleteProduct(req: Request, res: Response) {
+  try {
+    const productId = req.params.id;
+    const result = await deleteProductById(productId);
+    res.status(200).json({
+      success: true,
+      message: "Xóa sản phẩm thành công",
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      success: false,
+      message: error.message || "Xóa sản phẩm thất bại",
+    });
+  }
+}

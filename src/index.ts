@@ -1,4 +1,3 @@
-// Setup cơ bản
 import express from "express";
 import dotenv from "dotenv";
 import mongoConnect from "./config/MongoConnect";
@@ -15,9 +14,8 @@ mongoConnect();
 
 // Mount router
 app.use("/api/auth", authRouter);
-app.use("/products", productRouter); // ✅ Route Tuấn cần
+app.use("/products", productRouter);
 
-// Cuối cùng mới listen!
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server chạy tại http://localhost:${PORT}`);

@@ -4,6 +4,7 @@ import categoryModel from "@/types/category/category.model";
 import ProductResponse from "../response/productResponse";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
+import { umask } from "process";
 
 export async function uploadImgs(
   files: Express.Multer.File[] | undefined,
@@ -191,4 +192,40 @@ export async function getProductById(productId: string) {
     console.error("Lỗi khi lấy sản phẩm:", error.message);
     throw error;
   }
+}
+
+export async function updateProductById(
+  id: string,
+  data: Partial<InsertProductInput>
+) {
+  try {
+    const product = await productModel.findById(id);
+    if (!product) throw new Error("Not find product");
+    if (data.name !== undefined) product.name = data.name;
+    if (data.imgs !== undefined) product.imgs = data.imgs;
+    if (data.price !== undefined) product.price = data.price;
+    if (data.discountPrice !== undefined)
+      product.discountPrice = data.discountPrice;
+    if (data.shortDescription !== undefined)
+      product.shortDescription = data.shortDescription;
+    if (data.longDescription !== undefined)
+      product.longDescription = data.longDescription;
+    if (data.category?.categoryId !== undefined)
+      product.category = data.category.categoryId;
+    if (data.variants !== undefined) product.variants = data.variants;
+    if (data.sku !== undefined) product.sku = data.sku;
+    if (data.isVisible !== undefined) product.isVisible = data.isVisible;
+    if (data.hot !== undefined) product.hot = data.hot;
+    return await product.save();
+  } catch (error: any) {
+    console.error("❌ error update product:", error.message);
+    throw new Error(error.message || "Update product fail");
+  }
+}
+export async function deleteProductById(productId: string) {
+  const deleted = await productModel.findByIdAndDelete(productId);
+  if (!deleted) {
+    throw new Error("Không tìm thấy sản phẩm để xóa");
+  }
+  return deleted;
 }

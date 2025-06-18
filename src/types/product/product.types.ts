@@ -47,12 +47,13 @@ export interface InsertProductInput {
   imgs: { url: string }[];
   price: number;
   discountPrice?: number;
-  quantity: number;
   shortDescription: string;
   longDescription: string;
+  quantity?: number;
   category: {
     categoryId: string | Types.ObjectId;
   };
+
   variants?: {
     attributes: {
       size: string;
@@ -63,4 +64,7 @@ export interface InsertProductInput {
     sku?: string;
     img?: string;
   }[];
+  sku?: string;
+  isVisible?: boolean;
+  hot?: number;
 }
