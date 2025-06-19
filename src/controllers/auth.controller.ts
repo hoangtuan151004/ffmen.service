@@ -6,6 +6,7 @@ import { generateToken } from "../utils/generateToken";
 import User from "../types/user/user.model";
 import { IUser } from "@/types/user/user.model";
 import { sendWelcomeEmail } from "../utils/sendWellcome";
+import { sendWhatsapp } from "../utils/sendWhatsapp";
 
 const otpStore = new Map<string, string>();
 
@@ -47,7 +48,7 @@ export const CreateNewAccessCode = async (
       await sendResendOtp(email, otp);
       return res.json({ message: "Đã gửi OTP qua Email" });
     } else {
-      // await sendWhatsapp(formattedPhone!, otp);
+      await sendWhatsapp(formattedPhone!, otp);
       return res.json({ message: "Đã gửi OTP qua WhatsApp" });
     }
   } catch (err: any) {
@@ -106,11 +107,17 @@ export const Register = async (req: Request, res: Response): Promise<any> => {
       fullName,
       email,
       password,
+      phoneNumber,
     }: {
       fullName: string;
       email: string;
       password: string;
+      phoneNumber: string;
     } = req.body;
+
+    if (!fullName || !email || !password || !phoneNumber) {
+      return res.status(400).json({ message: "Thiếu thông tin đăng ký" });
+    }
 
     const existingUser = await User.findOne({
       email: email.toLowerCase().trim(),
@@ -120,10 +127,15 @@ export const Register = async (req: Request, res: Response): Promise<any> => {
       return res.status(409).json({ message: "Email đã được đăng ký" });
     }
 
+    const formattedPhone = phoneNumber?.startsWith("0")
+      ? "+84" + phoneNumber.slice(1)
+      : phoneNumber || "";
+
     await User.create({
       fullName,
       email: email.toLowerCase().trim(),
       password,
+      phoneNumber: formattedPhone,
     });
 
     // ✅ Gửi email chào mừng

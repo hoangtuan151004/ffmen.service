@@ -1,18 +1,18 @@
-// const twilio = require('twilio');
-// require("dotenv").config();
+import twilio from 'twilio';
+import dotenv from 'dotenv';
+dotenv.config();
 
-// const accountSid = process.env.TWILIO_ACCOUNT_SID;
-// const authToken = process.env.TWILIO_AUTH_TOKEN;
-// const fromWhatsappNumber = process.env.TWILIO_PHONE_NUMBER;
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const fromWhatsappNumber = process.env.TWILIO_PHONE_NUMBER;
 
-// const client = twilio(accountSid, authToken);
+const client = twilio(accountSid, authToken);
 
-// const sendWhatsapp = async (to, otp) => {
-//   return await client.messages.create({
-//     body: `Mã OTP của bạn là: ${otp}`,
-//     from: fromWhatsappNumber,
-//     to: `whatsapp:${to}`, // Số điện thoại đã chuẩn hóa: 84xxxxxxxxx
-//   });
-// };
+export async function sendWhatsapp(to: string, otp: string) {
+  return await client.messages.create({
+    body: `Mã OTP của bạn là: ${otp}`,
+    from: fromWhatsappNumber,
+    to: `whatsapp:${to}`, 
+  });
+};
 
-// module.exports = sendWhatsapp;
