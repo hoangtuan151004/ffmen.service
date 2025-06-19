@@ -9,11 +9,14 @@ export enum UserRole {
 }
 
 // 2. Interface cho document user
+
 export interface IUser extends Document {
   email: string;
   fullName: string;
   password: string;
   phoneNumber: string;
+  isActiveEmail: boolean;
+  isActivePhone: boolean;
   avatar?: string;
   roles: UserRole[];
   isActive: boolean;
@@ -57,6 +60,14 @@ const userSchema: Schema<IUser> = new Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    isActiveEmail: {
+      type: Boolean,
+      default: false,
+    },
+    isActivePhone: {
+      type: Boolean,
+      default: false,
     },
   },
   {

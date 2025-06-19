@@ -58,6 +58,9 @@ export const CreateNewAccessCode = async (
       .json({ message: "Gửi OTP thất bại", error: err.message });
   }
 };
+
+// Xác minh OTP
+// Kiểm tra OTP từ email hoặc số điện thoại
 export const ValidateAccessCode = async (
   req: Request,
   res: Response
@@ -92,13 +95,22 @@ export const ValidateAccessCode = async (
 
   if (savedOtp === otp) {
     otpStore.delete(target);
-    res.json({ message: "Xác minh thành công" });
+
+    const isActiveEmail = !!email;
+    const isActivePhone = !!phoneNumber;
+
+    res.json({
+      message: "Xác minh thành công",
+      isActiveEmail,
+      isActivePhone,
+    });
     return;
   } else {
     res.status(400).json({ message: "OTP không đúng" });
     return;
   }
 };
+
 
 // Đăng ký
 export const Register = async (req: Request, res: Response): Promise<any> => {
