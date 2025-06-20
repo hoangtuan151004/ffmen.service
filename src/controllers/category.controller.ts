@@ -61,11 +61,9 @@ export const updateCategory = async (
       .status(200)
       .json({ message: "Cập nhật danh mục thành công", data: updatedCategory });
   } catch (error: any) {
-    return res
-      .status(500)
-      .json({
-        message: error.message || "Đã xảy ra lỗi khi cập nhật danh mục",
-      });
+    return res.status(500).json({
+      message: error.message || "Đã xảy ra lỗi khi cập nhật danh mục",
+    });
   }
 };
 
