@@ -17,7 +17,7 @@ mongoConnect();
 app.use("/api/auth", authRouter);
 // app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
-app.use("/category", categoryRouter);
+app.use("/api/category", categoryRouter);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server chạy tại http://localhost:${PORT}`);

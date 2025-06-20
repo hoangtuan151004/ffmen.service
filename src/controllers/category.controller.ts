@@ -19,9 +19,14 @@ export const createCategory = async (req: Request, res: Response) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 export const getAllCategories = async (_req: Request, res: Response) => {
-  const data = await getAllCategoriesService();
-  res.json(data);
+  try {
+    const data = await getAllCategoriesService();
+    res.status(200).json({ message: "Lấy tất cả danh mục thành công", data });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || "Đã xảy ra lỗi khi lấy danh mục" });
+  }
 };
 
 export const getCategoryById = async (

@@ -10,8 +10,6 @@ import {
   deleteCategory,
 } from "@/controllers/category.controller";
 
-console.log("typeof getCategoryById:", typeof getCategoryById); // cần là "function"
-console.log("getCategoryById:", getCategoryById); // xem log chi tiết nó là gì
 const router = express.Router();
 
 router.post("/", createCategory);
