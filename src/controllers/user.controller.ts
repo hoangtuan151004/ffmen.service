@@ -2,21 +2,16 @@ import User from "../types/user/user.model";
 import { Request, Response } from "express";
 
 // GET ALL USERS
-export const GetAllUser = async (req: Request, res: Response) => {
+export const GetAllUser = async (
+  _req: Request,
+  res: Response
+): Promise<any> => {
   try {
-    const users = await User.find({}, {
-      id: 1,
-      firstName: 1,
-      lastName: 1,
-      email: 1,
-      phone: 1,
-      username: 1,
-      avatar: 1,
-      roles: 1,
-      isActive: 1,
-      isActivePhone: 1, 
-      isActiveEmail: 1,
-    }).sort({ createdAt: -1 });
+    const users = await User.find({})
+      .select(
+        "email phoneNumber fullName avatar roles isActive isActiveEmail isActivePhone"
+      )
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       message: "Users fetched successfully",
@@ -30,22 +25,23 @@ export const GetAllUser = async (req: Request, res: Response) => {
   }
 };
 
-
 // GET USER BY ID
-export const GetUserById = async (req: Request, res: Response) => {
+export const GetUserById = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const userId = req.params.id;
 
     const user = await User.findById(userId, {
-      id: 1,
-      firstName: 1,
-      lastName: 1,
       email: 1,
-      phone: 1,
-      username: 1,
+      phoneNumber: 1,
+      fullName: 1,
       avatar: 1,
       roles: 1,
       isActive: 1,
+      isActiveEmail: 1,
+      isActivePhone: 1,
     });
 
     if (!user) {
@@ -64,18 +60,23 @@ export const GetUserById = async (req: Request, res: Response) => {
   }
 };
 
-// UPDATE USER (email, password, roles)
+// UPDATE USER (profile information)
+// This endpoint is for users to update their own profile information
 export const UpdateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { email, password, roles } = req.body as { email?: string; password?: string; roles?: string[] };
+    const { fullName, phoneNumber, avatar } = req.body as {
+      fullName?: string;
+      phoneNumber?: string;
+      avatar?: string;
+    };
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
       {
-        email,
-        password,
-        roles,
+        fullName,
+        phoneNumber,
+        avatar,
       },
       { new: true }
     );
@@ -92,20 +93,21 @@ export const UpdateUser = async (req: Request, res: Response) => {
   }
 };
 
-// EDIT PROFILE
+// EDIT user (password, roles)
+// This endpoint is for admin to edit user roles and password
 export const EditUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, phone, avatar } =
-      req.body as { firstName?: string; lastName?: string; phone?: string; avatar?: string };
+    const { password, roles } = req.body as {
+      password?: string;
+      roles?: string[];
+    };
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
       {
-        firstName,
-        lastName,
-        phone,
-        avatar,
+        password,
+        roles,
       },
       { new: true }
     );
