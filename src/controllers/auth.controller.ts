@@ -111,7 +111,6 @@ export const ValidateAccessCode = async (
   }
 };
 
-
 // Đăng ký
 export const Register = async (req: Request, res: Response): Promise<any> => {
   try {

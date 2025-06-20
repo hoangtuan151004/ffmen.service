@@ -19,7 +19,11 @@ interface OtpEmailProps {
   storeName?: string;
 }
 
-const OtpEmail: React.FC<OtpEmailProps> = ({ email, otpCode, storeName = defaultStoreName }) => {
+const OtpEmail: React.FC<OtpEmailProps> = ({
+  email,
+  otpCode,
+  storeName = defaultStoreName,
+}) => {
   const previewText = `Mã OTP của bạn là ${otpCode} - ${storeName}`;
   return (
     <Html>
@@ -42,12 +46,14 @@ const OtpEmail: React.FC<OtpEmailProps> = ({ email, otpCode, storeName = default
             </Text>
             <Text style={otpBox}>{otpCode}</Text>
             <Text style={paragraph}>
-              Mã OTP này sẽ hết hạn sau 5 phút. Nếu bạn không yêu cầu, hãy bỏ qua email này.
+              Mã OTP này sẽ hết hạn sau 5 phút. Nếu bạn không yêu cầu, hãy bỏ
+              qua email này.
             </Text>
           </Section>
           <Section style={footer}>
             <Text style={footerText}>
-              &copy; {new Date().getFullYear()} {storeName}. All rights reserved.
+              &copy; {new Date().getFullYear()} {storeName}. All rights
+              reserved.
             </Text>
           </Section>
         </Container>
