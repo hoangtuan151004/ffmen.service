@@ -27,7 +27,7 @@ export const getAllCategories = async (_req: Request, res: Response) => {
 export const getCategoryById = async (
   req: Request,
   res: Response
-): Promise<Response> => {
+): Promise<any> => {
   try {
     const category = await getCategoryByIdService(req.params.id);
     if (!category) {
@@ -46,7 +46,7 @@ export const getCategoryById = async (
 export const updateCategory = async (
   req: Request,
   res: Response
-): Promise<Response> => {
+): Promise<any> => {
   try {
     const updatedCategory = await updateCategoryService(
       req.params.id,
@@ -72,7 +72,7 @@ export const updateCategory = async (
 export const deleteCategory = async (
   req: Request,
   res: Response
-): Promise<Response> => {
+): Promise<any> => {
   try {
     const deletedCategory = await deleteCategoryService(req.params.id);
     if (!deletedCategory) {
