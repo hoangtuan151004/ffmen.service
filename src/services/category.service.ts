@@ -24,6 +24,7 @@ export const createCategoryService = async (
 
   return category;
 };
+
 export const getAllCategoriesService = async (): Promise<ICategory[]> => {
   return await CategoryModel.find().populate("parentCategory", "name");
 };
