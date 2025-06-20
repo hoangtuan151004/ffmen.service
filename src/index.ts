@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoConnect from "./config/MongoConnect";
 import authRouter from "@/routes/auth.routes";
+// import userRouter from "./routes/user.routes";
 import productRouter from "./routes/products.routes";
 import categoryRouter from "@/routes/category.routes";
 dotenv.config();
@@ -14,7 +15,8 @@ mongoConnect();
 
 // Mount router
 app.use("/api/auth", authRouter);
-app.use("/products", productRouter);
+// app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
 app.use("/category", categoryRouter);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
