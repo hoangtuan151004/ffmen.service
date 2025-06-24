@@ -26,7 +26,16 @@ export const createCategoryService = async (
 };
 
 export const getAllCategoriesService = async (): Promise<ICategory[]> => {
-  return await CategoryModel.find().populate("parentCategory", "name");
+  try {
+    const categories = await CategoryModel.find().populate(
+      "parentCategory",
+      "name _id"
+    );
+    return categories;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách danh mục:", error);
+    throw new Error("Không thể lấy danh mục");
+  }
 };
 
 export const getCategoryByIdService = async (

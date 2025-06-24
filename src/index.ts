@@ -4,11 +4,17 @@ import mongoConnect from "./config/MongoConnect";
 import authRouter from "@/routes/auth.routes";
 import userRouter from "./routes/user.routes";
 import productRouter from "./routes/products.routes";
-import categoryRouter from "@/routes/category.routes";
+import categoriesRouter from "@/routes/categories.routes";
+import cors from "cors";
 dotenv.config();
 const app = express();
-console.log(typeof categoryRouter);
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:3001",
+    credentials: true,
+  })
+);
 
 // Kết nối DB
 mongoConnect();
@@ -17,7 +23,7 @@ mongoConnect();
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
-app.use("/api/category", categoryRouter);
+app.use("/api/categories", categoriesRouter);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server chạy tại http://localhost:${PORT}`);

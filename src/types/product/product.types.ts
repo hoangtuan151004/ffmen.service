@@ -40,6 +40,7 @@ export interface IProduct {
   reviews?: IReview[];
   shortDescription?: string;
   longDescription?: string;
+  quantity?: number;
 }
 /** Sản phẩm tạo từ FE */
 export interface InsertProductInput {
@@ -51,7 +52,8 @@ export interface InsertProductInput {
   longDescription: string;
   quantity?: number;
   category: {
-    categoryId: string | Types.ObjectId;
+    categoryId: string;
+    categoryName?: string;
   };
 
   variants?: {

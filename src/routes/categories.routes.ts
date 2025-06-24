@@ -13,7 +13,7 @@ import {
 const router = express.Router();
 
 router.post("/", createCategory);
-router.get("/all", getAllCategories);
+router.get("/", getAllCategories);
 router.get("/roots", getRootCategories);
 router.get("/parent/:id", getSubCategories);
 router.get("/:id", getCategoryById);

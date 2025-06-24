@@ -44,6 +44,7 @@ const productSchema = new Schema<IProductDoc>(
     discountPrice: { type: Number, required: true },
     rating: { type: Number, default: 0, min: 0, max: 5 },
     variants: { type: [variantSchema], default: [] },
+    quantity: { type: Number, default: 0 },
     category: {
       type: Schema.Types.ObjectId,
       ref: "category",

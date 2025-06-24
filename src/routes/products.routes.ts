@@ -13,7 +13,7 @@ const router = express.Router();
 // Upload nhiều ảnh
 router.post("/upload-images", upload.array("images", 10), handleUploadImages);
 router.post("/", upload.array("files", 10), createProduct);
-router.get("/all", getAllProducts);
+router.get("/", getAllProducts);
 router.get("/:id", getProductDetail);
 router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);

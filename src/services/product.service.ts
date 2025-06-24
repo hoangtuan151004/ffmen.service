@@ -47,16 +47,30 @@ export async function insertProduct(
   body: InsertProductInput
 ): Promise<IProduct> {
   try {
-    const {
-      name,
-      imgs,
-      price,
-      discountPrice,
-      shortDescription,
-      longDescription,
-      category,
-      variants,
-    } = body;
+    // Parse nếu bị string
+    let { category, variants } = body;
+
+    if (typeof category === "string") {
+      try {
+        category = JSON.parse(category);
+      } catch {
+        throw new Error("category không hợp lệ");
+      }
+    }
+
+    if (typeof variants === "string") {
+      try {
+        variants = JSON.parse(variants);
+      } catch {
+        throw new Error("variants không hợp lệ");
+      }
+    }
+
+    // Ép kiểu số cho price, discountPrice nếu là string
+    const price = Number(body.price);
+    const discountPrice = Number(body.discountPrice || 0);
+
+    const { name, imgs, shortDescription, longDescription } = body;
 
     if (
       !name ||
@@ -94,17 +108,21 @@ export async function insertProduct(
         };
       }) || [];
 
+    const totalQuantity =
+      formattedVariants?.reduce((acc, v) => acc + (v.quantity || 0), 0) || 0;
+
     const newProduct = new productModel({
       name,
       imgs,
       price,
-      discountPrice: discountPrice || 0,
+      discountPrice,
       rating: 0,
       variants: formattedVariants,
       category: categoryFind._id,
       shortDescription,
       longDescription,
       isVisible: true,
+      quantity: totalQuantity,
     });
 
     return await newProduct.save();

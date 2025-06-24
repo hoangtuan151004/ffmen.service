@@ -20,10 +20,12 @@ export const handleUploadImages = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
+    console.log(">>> req.body:", req.body); // Log kiểm tra
     const imgs = await uploadImgs(req.files as Express.Multer.File[], req);
     const product = await insertProduct({ ...req.body, imgs });
     res.status(201).json({ success: true, data: product });
   } catch (err: any) {
+    console.error("❌ Lỗi tại createProduct:", err.message);
     res.status(400).json({ success: false, message: err.message });
   }
 };
