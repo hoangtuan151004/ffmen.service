@@ -48,6 +48,29 @@ export async function uploadImgs(
     throw new Error(error.message);
   }
 }
+export async function uploadVariantImgs(
+  files: Express.Multer.File[] | undefined,
+  variantIndexesRaw: string | string[] | undefined,
+  variants: any[]
+) {
+  try {
+    if (!files || !variantIndexesRaw) return;
+
+    const variantIndexes = Array.isArray(variantIndexesRaw)
+      ? variantIndexesRaw.map(Number)
+      : JSON.parse(variantIndexesRaw); // frontend gửi JSON.stringify([...])
+
+    files.forEach((file, i) => {
+      const index = variantIndexes[i];
+      if (variants[index]) {
+        variants[index].img = file.path;
+      }
+    });
+  } catch (error: any) {
+    console.error("❌ Lỗi upload ảnh biến thể:", error.message);
+    throw new Error("Không xử lý được ảnh biến thể");
+  }
+}
 
 export async function insertProduct(
   body: InsertProductInput

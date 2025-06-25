@@ -6,6 +6,7 @@ import {
   getProductById,
   updateProductById,
   deleteProductById,
+  uploadVariantImgs,
 } from "@/services/product.service";
 import { Request, Response } from "express";
 
@@ -20,13 +21,80 @@ export const handleUploadImages = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    console.log(">>> req.body:", req.body); // Log kiểm tra
-    const imgs = await uploadImgs(req.files as Express.Multer.File[], req);
-    const product = await insertProduct({ ...req.body, imgs });
+    const filesObj = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+
+    // 🖼️ Ảnh chính
+    const imgs = await uploadImgs(filesObj["files"] || [], req);
+
+    // 🔄 Parse variants
+    const variants = JSON.parse(req.body.variants || "[]");
+
+    // 🖼️ Gán ảnh vào biến thể (nếu có)
+    await uploadVariantImgs(
+      filesObj["variantFiles"] || [],
+      req.body.variantImgIndexes,
+      variants
+    );
+
+    const product = await insertProduct({
+      ...req.body,
+      imgs,
+      variants,
+    });
+
     res.status(201).json({ success: true, data: product });
   } catch (err: any) {
     console.error("❌ Lỗi tại createProduct:", err.message);
     res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
+    const productId = req.params.id;
+
+    // req.files giờ là object chứa mảng file cho từng field
+    const filesObj = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+
+    // Xử lý ảnh sản phẩm chính
+    const imgs = await uploadImgs(filesObj["files"] || [], req);
+
+    // Parse biến thể và danh sách biến thể bị xoá từ body
+    const variants = JSON.parse(req.body.variants || "[]");
+    const deletedVariantIds = JSON.parse(req.body.deletedVariantIds || "[]");
+
+    // Upload ảnh biến thể (nếu có)
+    await uploadVariantImgs(
+      filesObj["variantFiles"] || [],
+      req.body.variantImgIndexes,
+      variants
+    );
+
+    // Cập nhật product
+    const updated = await updateProductById(productId, {
+      name: req.body.name,
+      price: Number(req.body.price),
+      discountPrice: Number(req.body.discountPrice),
+      shortDescription: req.body.shortDescription,
+      longDescription: req.body.longDescription,
+      category: JSON.parse(req.body.category || "{}"),
+      imgs,
+      variants,
+      deletedVariantIds,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật sản phẩm thành công",
+      data: updated,
+    });
+  } catch (error: any) {
+    console.error("Lỗi cập nhật sản phẩm:", error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -48,42 +116,6 @@ export const getProductDetail = async (req: Request, res: Response) => {
     res.status(200).json(product);
   } catch (error: any) {
     res.status(404).json({ message: error.message || "Lỗi không xác định" });
-  }
-};
-
-export const updateProduct = async (req: Request, res: Response) => {
-  try {
-    const productId = req.params.id;
-
-    const fileUrls = (req.files as Express.Multer.File[]).map((file) => ({
-      url: (file as any).path, // đường dẫn Cloudinary trả về
-    }));
-    const imgUrls = JSON.parse(req.body.imgUrls || "[]").map((url: string) => ({
-      url,
-    }));
-
-    const data = {
-      name: req.body.name,
-      price: Number(req.body.price),
-      discountPrice: Number(req.body.discountPrice),
-      shortDescription: req.body.shortDescription,
-      longDescription: req.body.longDescription,
-      category: JSON.parse(req.body.category || "{}"),
-      imgs: [...fileUrls, ...imgUrls],
-      variants: JSON.parse(req.body.variants || "[]"),
-      deletedVariantIds: JSON.parse(req.body.deletedVariantIds || "[]"),
-    };
-
-    const updated = await updateProductById(productId, data);
-
-    res.status(200).json({
-      success: true,
-      message: "Cập nhật sản phẩm thành công",
-      data: updated,
-    });
-  } catch (error: any) {
-    console.error("Lỗi cập nhật sản phẩm:", error.message);
-    res.status(500).json({ success: false, message: error.message });
   }
 };
 

@@ -25,7 +25,9 @@ export const getAllCategories = async (_req: Request, res: Response) => {
     const data = await getAllCategoriesService();
     res.status(200).json({ message: "Lấy tất cả danh mục thành công", data });
   } catch (error: any) {
-    res.status(500).json({ message: error.message || "Đã xảy ra lỗi khi lấy danh mục" });
+    res
+      .status(500)
+      .json({ message: error.message || "Đã xảy ra lỗi khi lấy danh mục" });
   }
 };
 
@@ -81,15 +83,21 @@ export const deleteCategory = async (
     if (!deletedCategory) {
       return res
         .status(404)
-        .json({ message: "Không tìm thấy danh mục để xóa" });
+        .json({ success: false, message: "Không tìm thấy danh mục để xóa" });
     }
-    return res
-      .status(200)
-      .json({ message: "Xóa danh mục thành công", data: deletedCategory });
+
+    return res.status(200).json({
+      success: true,
+      message: "Xóa danh mục thành công",
+      data: deletedCategory,
+    });
   } catch (error: any) {
-    return res
-      .status(500)
-      .json({ message: error.message || "Đã xảy ra lỗi khi xóa danh mục" });
+    const isLogicError = error.message?.includes("Không thể xoá");
+
+    return res.status(isLogicError ? 400 : 500).json({
+      success: false,
+      message: error.message || "Đã xảy ra lỗi khi xóa danh mục",
+    });
   }
 };
 

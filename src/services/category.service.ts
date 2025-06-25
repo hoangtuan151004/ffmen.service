@@ -1,5 +1,7 @@
 import CategoryModel, { ICategory } from "@/types/category/category.model";
 import { CreateCategoryInput } from "../types/category/category.types";
+import ProductModel from "@/types/product/product.model";
+import { Types } from "mongoose";
 
 export const createCategoryService = async (
   input: CreateCategoryInput
@@ -54,7 +56,21 @@ export const updateCategoryService = async (
 export const deleteCategoryService = async (
   id: string
 ): Promise<ICategory | null> => {
-  return await CategoryModel.findByIdAndDelete(id);
+  const objectId = new Types.ObjectId(id);
+
+  console.log("Check if category has products:", id);
+
+  const existingProduct = await ProductModel.exists({
+    category: new Types.ObjectId(id),
+  });
+
+  console.log("Found product:", existingProduct);
+
+  if (existingProduct) {
+    throw new Error("Không thể xoá vì vẫn còn sản phẩm thuộc danh mục này.");
+  }
+
+  return await CategoryModel.findByIdAndDelete(objectId);
 };
 
 export const getRootCategoriesService = async (): Promise<ICategory[]> => {
