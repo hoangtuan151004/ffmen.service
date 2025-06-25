@@ -1,11 +1,17 @@
-import { IProduct, InsertProductInput } from "@/types/product/product.types";
+import {
+  IProduct,
+  IVariant,
+  InsertProductInput,
+  UpdateProductInput,
+} from "@/types/product/product.types";
 import productModel from "@/types/product/product.model";
 import categoryModel from "@/types/category/category.model";
 import ProductResponse from "../response/productResponse";
 import { Request, Response } from "express";
-import mongoose from "mongoose";
 import { umask } from "process";
+import mongoose, { Types } from "mongoose";
 
+// import { UpdateProductInput } from "@/types/product/product.types";
 export async function uploadImgs(
   files: Express.Multer.File[] | undefined,
   req: Request
@@ -201,7 +207,9 @@ export async function getProductById(productId: string) {
       throw new Error("ID sản phẩm không hợp lệ");
     }
 
-    const product = await productModel.findById(productId);
+    const product = await productModel
+      .findById(productId)
+      .populate("category", "name");
     if (!product) {
       throw new Error("Không tìm thấy sản phẩm");
     }
@@ -212,34 +220,96 @@ export async function getProductById(productId: string) {
   }
 }
 
-export async function updateProductById(
-  id: string,
-  data: Partial<InsertProductInput>
-) {
+export async function updateProductById(id: string, data: UpdateProductInput) {
   try {
     const product = await productModel.findById(id);
-    if (!product) throw new Error("Not find product");
+    if (!product) throw new Error("Không tìm thấy sản phẩm");
+
     if (data.name !== undefined) product.name = data.name;
     if (data.imgs !== undefined) product.imgs = data.imgs;
-    if (data.price !== undefined) product.price = data.price;
+    if (data.price !== undefined) product.price = Number(data.price);
     if (data.discountPrice !== undefined)
-      product.discountPrice = data.discountPrice;
+      product.discountPrice = Number(data.discountPrice);
     if (data.shortDescription !== undefined)
       product.shortDescription = data.shortDescription;
     if (data.longDescription !== undefined)
       product.longDescription = data.longDescription;
     if (data.category?.categoryId !== undefined)
-      product.category = data.category.categoryId;
-    if (data.variants !== undefined) product.variants = data.variants;
+      product.category = new Types.ObjectId(data.category.categoryId);
+    if (Array.isArray(data.variants)) {
+      const updatedVariants = [...product.variants];
+
+      data.variants.forEach((variantInput) => {
+        const {
+          _id,
+          attributes,
+          price,
+          quantity,
+          sku = "",
+          img = "",
+        } = variantInput;
+
+        if (!attributes?.size || !attributes?.color) {
+          throw new Error("Mỗi biến thể phải có size và color");
+        }
+
+        if (_id) {
+          const index = updatedVariants.findIndex(
+            (v) => v._id?.toString() === _id
+          );
+          if (index !== -1) {
+            updatedVariants[index] = {
+              ...updatedVariants[index],
+              attributes,
+              price,
+              quantity,
+              sku,
+              img,
+            };
+          }
+        } else {
+          updatedVariants.push({
+            attributes,
+            price,
+            quantity,
+            sku,
+            img,
+          });
+        }
+      });
+      if (Array.isArray(data.deletedVariantIds)) {
+        data.deletedVariantIds.forEach((idToDelete) => {
+          const index = updatedVariants.findIndex(
+            (v) => v._id?.toString() === idToDelete
+          );
+          if (index !== -1) updatedVariants.splice(index, 1);
+        });
+      }
+
+      product.variants = updatedVariants;
+
+      product.quantity = updatedVariants.reduce(
+        (acc, v) => acc + (v.quantity || 0),
+        0
+      );
+    }
+
     if (data.sku !== undefined) product.sku = data.sku;
     if (data.isVisible !== undefined) product.isVisible = data.isVisible;
     if (data.hot !== undefined) product.hot = data.hot;
-    return await product.save();
+    // console.log("📦 data.variants:", data.variants);
+    // console.log("📦 deletedVariantIds:", data.deletedVariantIds);
+    // console.log("📦 variants FINAL trước khi save:", product.variants);
+    await product.save();
+    const updated = await productModel.findById(product._id);
+    // console.log("✅ After Save + Reload:", updated?.variants);
+    return updated;
   } catch (error: any) {
     console.error("❌ error update product:", error.message);
-    throw new Error(error.message || "Update product fail");
+    throw new Error(error.message || "Cập nhật sản phẩm thất bại");
   }
 }
+
 export async function deleteProductById(productId: string) {
   const deleted = await productModel.findByIdAndDelete(productId);
   if (!deleted) {

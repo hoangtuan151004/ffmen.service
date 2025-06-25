@@ -70,3 +70,62 @@ export interface InsertProductInput {
   isVisible?: boolean;
   hot?: number;
 }
+
+/** Dùng khi update sản phẩm từ FE */
+export interface UpdateProductInput extends Partial<InsertProductInput> {
+  deletedVariantIds?: string[]; // Danh sách variant cần xoá theo _id
+}
+// export interface VariantInput {
+//   _id?: string;
+//   attributes: {
+//     size: string;
+//     color: string;
+//     [key: string]: any;
+//   };
+//   price: number;
+//   quantity: number;
+//   sku?: string;
+//   img?: string;
+// }
+
+// export interface UpdatedVariant {
+//   _id?: any;
+//   attributes: {
+//     size: string;
+//     color: string;
+//     [key: string]: any;
+//   };
+//   price: number;
+//   quantity: number;
+//   sku: string;
+//   img: string;
+// }
+
+export interface VariantInput {
+  _id?: string;
+  attributes: {
+    size: string;
+    color: string;
+  };
+  price: number;
+  quantity: number;
+  sku?: string;
+  img?: string;
+}
+
+export interface UpdateProductInput {
+  name?: string;
+  imgs?: { url: string }[];
+  price?: number;
+  discountPrice?: number;
+  shortDescription?: string;
+  longDescription?: string;
+  category?: {
+    categoryId: string;
+  };
+  variants?: VariantInput[];
+  deletedVariantIds?: string[];
+  sku?: string;
+  isVisible?: boolean;
+  hot?: number;
+}
