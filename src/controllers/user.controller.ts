@@ -1,5 +1,6 @@
 import User from "../types/user/user.model";
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 
 // GET ALL USERS
 export const GetAllUser = async (
@@ -95,34 +96,41 @@ export const UpdateUser = async (req: Request, res: Response) => {
 
 // EDIT user (password, roles)
 // This endpoint is for admin to edit user roles and password
-export const EditUser = async (req: Request, res: Response) => {
+export const EditUser = async (req: Request, res: Response):Promise<any> => {
   try {
     const { id } = req.params;
-    const { password, roles } = req.body as {
-      password?: string;
-      roles?: string[];
-    };
+    const { password, roles }: { password?: string; roles?: string[] } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      {
-        password,
-        roles,
-      },
-      { new: true }
-    );
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    // Cập nhật password nếu có
+    if (password) {
+      const hashed = await bcrypt.hash(password, 10);
+      user.password = hashed;
+    }
+
+    // Cập nhật roles nếu có
+    if (roles) {
+      user.roles = roles.map(role => role as any); 
+    }
+
+    await user.save();
 
     res.status(200).json({
-      message: "User profile updated successfully",
-      user: updatedUser,
+      message: "Cập nhật người dùng thành công",
+      user,
     });
   } catch (error) {
-    console.error("Error:", error);
+    console.error("EditUser Error:", error);
     res.status(500).json({
-      message: "Something went wrong",
+      message: "Đã xảy ra lỗi máy chủ",
     });
   }
 };
+
 
 // DELETE USER
 export const DeleteUser = async (req: Request, res: Response) => {

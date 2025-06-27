@@ -4,25 +4,25 @@ This is the backend service for the **FFMen** project, built using **Node.js**, 
 
 ## ✨ Features
 
-* ✅ User Registration & Login with hashed passwords
-* ✅ JWT authentication (token-based)
-* ✅ Send Welcome Emails via Resend + React Email
-* ✅ OTP verification via Email or WhatsApp
-* ✅ Phone number normalization (Vietnam format `+84`)
-* ✅ Role-based access control (admin, staff, customer)
-* ✅ MongoDB using Mongoose
-* ✅ TypeScript for type safety
-* ✅ CORS enabled for frontend communication
+- ✅ User Registration & Login with hashed passwords
+- ✅ JWT authentication (token-based)
+- ✅ Send Welcome Emails via Resend + React Email
+- ✅ OTP verification via Email or WhatsApp
+- ✅ Phone number normalization (Vietnam format `+84`)
+- ✅ Role-based access control (admin, staff, customer)
+- ✅ MongoDB using Mongoose
+- ✅ TypeScript for type safety
+- ✅ CORS enabled for frontend communication
 
 ## 📦 Tech Stack
 
-* **Node.js** + **Express**
-* **TypeScript**
-* **MongoDB** + **Mongoose**
-* **bcryptjs** for password hashing
-* **Resend** + **@react-email** for emails
-* **JWT** for authentication
-* **dotenv** for env config
+- **Node.js** + **Express**
+- **TypeScript**
+- **MongoDB** + **Mongoose**
+- **bcryptjs** for password hashing
+- **Resend** + **@react-email** for emails
+- **JWT** for authentication
+- **dotenv** for env config
 
 ## 📂 Project Structure
 
@@ -113,15 +113,11 @@ Email content is built using [`@react-email/components`](https://react.email/) a
 
 ## 🛡️ Security Notes
 
-* Passwords are hashed before storing using `bcryptjs`.
-* Token is stored in `HttpOnly` cookie (recommended for web apps).
-* CORS is configured to allow requests from frontend.
-
-
+- Passwords are hashed before storing using `bcryptjs`.
+- Token is stored in `HttpOnly` cookie (recommended for web apps).
+- CORS is configured to allow requests from frontend.
 
 ## 👨‍💻 Author
 
-
 ---
 
-> Powered by Node.js + TypeScript + MongoDB
