@@ -11,7 +11,6 @@ import { Request, Response } from "express";
 import { umask } from "process";
 import mongoose, { Types } from "mongoose";
 
-// import { UpdateProductInput } from "@/types/product/product.types";
 export async function uploadImgs(
   files: Express.Multer.File[] | undefined,
   req: Request
@@ -95,7 +94,6 @@ export async function insertProduct(
       }
     }
 
-    // Ép kiểu số cho price, discountPrice nếu là string
     const price = Number(body.price);
     const discountPrice = Number(body.discountPrice || 0);
 

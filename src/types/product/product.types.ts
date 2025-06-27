@@ -1,13 +1,12 @@
 import { Types } from "mongoose";
-import { ICategory } from "@/types/category/category.model";
-import mongoose from "mongoose";
 
 /** Ảnh sản phẩm */
 export interface IImg {
   _id?: Types.ObjectId;
   url: string;
 }
-/** Review sản phẩm */
+
+/** Đánh giá sản phẩm */
 export interface IReview {
   userId: Types.ObjectId;
   rating: number;
@@ -15,14 +14,16 @@ export interface IReview {
   images?: { url: string }[];
   createdAt?: Date;
 }
-/** Biến thể sản phẩm */
+
+/** Biến thể sản phẩm (dùng trong DB) */
 export interface IVariant {
-  attributes: Record<string, string>;
+  attributes: Record<string, string>; // ví dụ: { size: "M", color: "Đen" }
   price: number;
   quantity: number;
   sku?: string;
   img?: string;
 }
+
 /** Sản phẩm lưu trong DB */
 export interface IProduct {
   name: string;
@@ -31,7 +32,7 @@ export interface IProduct {
   discountPrice?: number;
   rating?: number;
   variants: IVariant[];
-  category: mongoose.Types.ObjectId;
+  category: Types.ObjectId;
   sku?: string;
   isDeleted?: boolean;
   isVisible?: boolean;
@@ -41,7 +42,24 @@ export interface IProduct {
   shortDescription?: string;
   longDescription?: string;
   quantity?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
+
+/** Biến thể được gửi từ FE khi thêm/sửa */
+export interface VariantInput {
+  _id?: string;
+  attributes: {
+    size: string;
+    color: string;
+    [key: string]: string; // hỗ trợ mở rộng như "chất liệu", "kiểu cổ"...
+  };
+  price: number;
+  quantity: number;
+  sku?: string;
+  img?: string;
+}
+
 /** Sản phẩm tạo từ FE */
 export interface InsertProductInput {
   name: string;
@@ -55,77 +73,13 @@ export interface InsertProductInput {
     categoryId: string;
     categoryName?: string;
   };
-
-  variants?: {
-    attributes: {
-      size: string;
-      color: string;
-    };
-    price: number;
-    quantity: number;
-    sku?: string;
-    img?: string;
-  }[];
-  sku?: string;
-  isVisible?: boolean;
-  hot?: number;
-}
-
-/** Dùng khi update sản phẩm từ FE */
-export interface UpdateProductInput extends Partial<InsertProductInput> {
-  deletedVariantIds?: string[]; // Danh sách variant cần xoá theo _id
-}
-// export interface VariantInput {
-//   _id?: string;
-//   attributes: {
-//     size: string;
-//     color: string;
-//     [key: string]: any;
-//   };
-//   price: number;
-//   quantity: number;
-//   sku?: string;
-//   img?: string;
-// }
-
-// export interface UpdatedVariant {
-//   _id?: any;
-//   attributes: {
-//     size: string;
-//     color: string;
-//     [key: string]: any;
-//   };
-//   price: number;
-//   quantity: number;
-//   sku: string;
-//   img: string;
-// }
-
-export interface VariantInput {
-  _id?: string;
-  attributes: {
-    size: string;
-    color: string;
-  };
-  price: number;
-  quantity: number;
-  sku?: string;
-  img?: string;
-}
-
-export interface UpdateProductInput {
-  name?: string;
-  imgs?: { url: string }[];
-  price?: number;
-  discountPrice?: number;
-  shortDescription?: string;
-  longDescription?: string;
-  category?: {
-    categoryId: string;
-  };
   variants?: VariantInput[];
-  deletedVariantIds?: string[];
   sku?: string;
   isVisible?: boolean;
   hot?: number;
+}
+
+/** Sản phẩm update từ FE */
+export interface UpdateProductInput extends Partial<InsertProductInput> {
+  deletedVariantIds?: string[]; // Xoá biến thể theo _id
 }

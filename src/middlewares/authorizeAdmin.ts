@@ -4,7 +4,9 @@ import { Request, Response, NextFunction } from "express";
 declare global {
   namespace Express {
     interface User {
+      id?: string;
       role?: string;
+
       // add other user properties if needed
     }
     interface Request {
@@ -13,9 +15,15 @@ declare global {
   }
 }
 
-export const authorizeAdmin = (req: Request, res: Response, next: NextFunction):any => {
+export const authorizeAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): any => {
   if (req.user?.role !== "admin") {
-    return res.status(403).json({ message: "Chỉ admin mới được phép truy cập" });
+    return res
+      .status(403)
+      .json({ message: "Chỉ admin mới được phép truy cập" });
   }
   next();
 };

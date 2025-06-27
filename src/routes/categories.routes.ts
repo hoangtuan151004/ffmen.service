@@ -1,5 +1,4 @@
 import express from "express";
-// Đường dẫn CHÍNH XÁC từ baseUrl: "src"
 import {
   createCategory,
   getAllCategories,
@@ -9,14 +8,20 @@ import {
   updateCategory,
   deleteCategory,
 } from "@/controllers/category.controller";
+import { authenticateToken } from "@/middlewares/auth.middleware";
+import { authorizeAdmin } from "@/middlewares/authorizeAdmin"; // 👈 thêm dòng này
 
 const router = express.Router();
 
-router.post("/", createCategory);
+// 🔐 Chỉ Admin mới được quản lý danh mục
+router.post("/", authenticateToken, authorizeAdmin, createCategory);
+router.put("/:id", authenticateToken, authorizeAdmin, updateCategory);
+router.delete("/:id", authenticateToken, authorizeAdmin, deleteCategory);
+
+// ✅ Public (người dùng được xem)
 router.get("/", getAllCategories);
 router.get("/roots", getRootCategories);
 router.get("/parent/:id", getSubCategories);
 router.get("/:id", getCategoryById);
-router.put("/:id", updateCategory);
-router.delete("/:id", deleteCategory);
+
 export default router;

@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from "express";
 declare global {
   namespace Express {
     interface User {
+      id?: string;
       role?: string;
       // add other user properties if needed
     }
@@ -28,7 +29,13 @@ export const authenticateToken = (
 
   jwt.verify(token, secret, (err, decoded) => {
     if (err) return res.sendStatus(403); // Forbidden
-    req.user = typeof decoded === "object" && decoded !== null ? (decoded as Express.User) : undefined; // Attach user to request for later use
+    if (typeof decoded === "object" && decoded !== null && "id" in decoded) {
+      req.user = {
+        id: (decoded as any).id,
+        role: (decoded as any).role,
+      };
+    }
+
     next();
   });
 };

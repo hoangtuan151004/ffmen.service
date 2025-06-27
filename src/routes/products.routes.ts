@@ -8,30 +8,44 @@ import {
   updateProduct,
   deleteProduct,
 } from "@/controllers/product.controller";
+
+import { authenticateToken } from "@/middlewares/auth.middleware";
+import { authorizeAdmin } from "@/middlewares/authorizeAdmin";
+
 const router = express.Router();
 
-// Upload nhiều ảnh
-router.post("/upload-images", upload.array("images", 10), handleUploadImages);
+// 🔐(chỉ admin)
+router.post(
+  "/upload-images",
+  authenticateToken,
+  authorizeAdmin,
+  upload.array("images", 10),
+  handleUploadImages
+);
 router.post(
   "/",
+  authenticateToken,
+  authorizeAdmin,
   upload.fields([
     { name: "files", maxCount: 10 },
     { name: "variantFiles", maxCount: 20 },
   ]),
   createProduct
 );
-
-router.get("/", getAllProducts);
-router.get("/:id", getProductDetail);
 router.put(
   "/:id",
+  authenticateToken,
+  authorizeAdmin,
   upload.fields([
     { name: "files", maxCount: 10 },
     { name: "variantFiles", maxCount: 20 },
   ]),
   updateProduct
 );
+router.delete("/:id", authenticateToken, authorizeAdmin, deleteProduct);
 
-router.delete("/:id", deleteProduct);
+// ✅ (public)
+router.get("/", getAllProducts);
+router.get("/:id", getProductDetail);
 
 export default router;
