@@ -2,6 +2,7 @@ import CategoryModel, { ICategory } from "@/types/category/category.model";
 import { CreateCategoryInput } from "../types/category/category.types";
 import ProductModel from "@/types/product/product.model";
 import { Types } from "mongoose";
+import CategoryResponse from "../response/categoryResponse ";
 
 export const createCategoryService = async (
   input: CreateCategoryInput
@@ -27,19 +28,20 @@ export const createCategoryService = async (
   return category;
 };
 
-export const getAllCategoriesService = async (): Promise<ICategory[]> => {
-  try {
-    const categories = await CategoryModel.find().populate(
-      "parentCategory",
-      "name _id"
-    );
-    return categories;
-  } catch (error) {
-    console.error("Lỗi khi lấy danh sách danh mục:", error);
-    throw new Error("Không thể lấy danh mục");
-  }
-};
+export const getAllCategoriesService = async (page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+  const totalCategories = await CategoryModel.countDocuments();
 
+  const categories = await CategoryModel.find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    .populate("parentCategory", "name _id");
+
+  const totalPages = Math.ceil(totalCategories / limit);
+
+  return new CategoryResponse(totalCategories, totalPages, page, categories);
+};
 export const getCategoryByIdService = async (
   id: string
 ): Promise<ICategory | null> => {
