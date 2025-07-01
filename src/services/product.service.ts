@@ -159,35 +159,6 @@ export async function insertProduct(
   }
 }
 
-export async function getpros(page = 1, limit = 10) {
-  try {
-    const skip = (page - 1) * limit;
-    const totalItems = await productModel.countDocuments();
-    const result = await productModel
-      .find()
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 });
-    return new ProductResponse<IProduct[]>(
-      totalItems,
-      Math.ceil(totalItems / limit),
-      page,
-      result
-    );
-  } catch (error: any) {
-    console.error("Lỗi lấy danh sách sản phẩm:", error);
-    throw error;
-  }
-}
-
-// export async function getProductById(productId: string) {
-//   try {
-//     return await productModel.findById(productId);
-//   } catch (error: any) {
-//     console.error("Lỗi lấy thông tin sản phẩm", error);
-//     throw error;
-//   }
-// }
 export const getProductDetail = async (req: Request, res: Response) => {
   try {
     const productId = req.params.id;

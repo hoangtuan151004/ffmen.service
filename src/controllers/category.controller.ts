@@ -20,14 +20,22 @@ export const createCategory = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllCategories = async (_req: Request, res: Response) => {
+export const getAllCategories = async (req: Request, res: Response) => {
   try {
-    const data = await getAllCategoriesService();
-    res.status(200).json({ message: "Lấy tất cả danh mục thành công", data });
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const result = await getAllCategoriesService(page, limit);
+
+    res.status(200).json({
+      message: "Lấy danh sách danh mục thành công",
+      ...result,
+    });
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: error.message || "Đã xảy ra lỗi khi lấy danh mục" });
+    console.error("Lỗi khi lấy danh mục:", error);
+    res.status(500).json({
+      message: error.message || "Đã xảy ra lỗi khi lấy danh mục",
+    });
   }
 };
 
