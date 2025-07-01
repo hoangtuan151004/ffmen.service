@@ -76,17 +76,17 @@ const userSchema: Schema<IUser> = new Schema(
 );
 
 // 4. Middleware hash password trước khi lưu
-userSchema.pre<IUser>("save", async function (next) {
-  if (!this.isModified("password")) return next();
+// userSchema.pre<IUser>("save", async function (next) {
+//   if (!this.isModified("password")) return next();
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    return next();
-  } catch (err) {
-    return next(err as Error);
-  }
-});
+//   try {
+//     const salt = await bcrypt.genSalt(10);
+//     this.password = await bcrypt.hash(this.password, salt);
+//     return next();
+//   } catch (err) {
+//     return next(err as Error);
+//   }
+// });
 
 // 5. Method so sánh mật khẩu
 userSchema.methods.comparePassword = async function (

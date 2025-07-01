@@ -6,6 +6,7 @@ import { sendWelcomeEmail } from "../utils/sendWellcome";
 import { sendWhatsapp } from "../utils/sendWhatsapp";
 import generateOtp from "../utils/generateOtp";
 import { generateToken } from "../utils/generateToken";
+import { SessionData } from "express-session";
 
 const otpStore = new Map<string, string>();
 
@@ -97,7 +98,6 @@ export const ValidateAccessCode = async (
   return res.status(400).json({ message: "OTP không đúng" });
 };
 
-
 export const VerifyOtpToResetPassword = async (
   req: Request,
   res: Response
@@ -126,7 +126,9 @@ export const VerifyOtpToResetPassword = async (
       user = await User.findOne({ phoneNumber: rawPhone });
       target = rawPhone;
     } else {
-      return res.status(400).json({ message: "Thiếu email hoặc số điện thoại" });
+      return res
+        .status(400)
+        .json({ message: "Thiếu email hoặc số điện thoại" });
     }
 
     if (!user) {
@@ -138,7 +140,9 @@ export const VerifyOtpToResetPassword = async (
       return res.status(403).json({ message: "Email chưa được xác minh" });
     }
     if (rawPhone && !user.isActivePhone) {
-      return res.status(403).json({ message: "Số điện thoại chưa được xác minh" });
+      return res
+        .status(403)
+        .json({ message: "Số điện thoại chưa được xác minh" });
     }
 
     // Kiểm tra mã OTP
@@ -155,7 +159,6 @@ export const VerifyOtpToResetPassword = async (
     return res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };
-
 
 export const Register = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -239,6 +242,7 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
         id: user._id,
         email: user.email,
         roles: user.roles,
+        avatar: user.avatar,
       },
     });
   } catch (error) {
@@ -248,12 +252,54 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
 };
 
 // ✅ Đăng xuất
-export const Logout = (req: Request, res: Response) => {
+export const Logout = (req: Request, res: Response): void => {
   try {
     res.clearCookie("token");
-    res.status(200).json({ message: "Đăng xuất thành công" });
+
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Lỗi khi xoá session:", err);
+          res.status(500).json({ message: "Lỗi khi đăng xuất" });
+        } else {
+          res.status(200).json({ message: "Đăng xuất thành công" });
+        }
+      });
+    } else {
+      res.status(200).json({ message: "Đăng xuất thành công" });
+    }
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Đã có lỗi khi đăng xuất" });
+  }
+};
+
+// Reset Password
+export const resetPasswordController = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email, phoneNumber, password } = req.body;
+
+    if (!password || (!email && !phoneNumber)) {
+      return res.status(400).json({ message: "Thiếu thông tin cần thiết." });
+    }
+
+    const user = await User.findOne({
+      $or: [{ email }, { phoneNumber }],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng." });
+    }
+
+    user.password = password;
+    await user.save();
+
+    return res.status(200).json({ message: "Đặt lại mật khẩu thành công." });
+  } catch (error) {
+    console.error("Lỗi reset-password:", error);
+    return res.status(500).json({ message: "Lỗi máy chủ." });
   }
 };
