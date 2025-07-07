@@ -1,19 +1,25 @@
 import mongoose, { Schema, Document, model } from "mongoose";
-import { IOrder } from "./oder.types";
+import { IOrder } from "../types/oder.types";
 
 interface IOrderDoc extends IOrder, Document {}
 
 const orderItemSchema = new Schema(
   {
-    productId: { type: Schema.Types.ObjectId, ref: "product", required: true },
+    productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     name: { type: String, required: true },
     variant: {
-      size: { type: String },
-      color: { type: String },
+      attributes: {
+        type: Map,
+        of: String,
+        required: true,
+      },
+      price: { type: Number, required: true },
+      quantity: { type: Number, required: true },
+      sku: { type: String },
+      img: { type: String },
     },
     quantity: { type: Number, required: true },
     price: { type: Number, required: true },
-    img: { type: String, required: true },
   },
   { _id: false }
 );

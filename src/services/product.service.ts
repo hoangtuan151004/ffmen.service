@@ -3,9 +3,9 @@ import {
   IVariant,
   InsertProductInput,
   UpdateProductInput,
-} from "@/types/product/product.types";
-import productModel from "@/types/product/product.model";
-import categoryModel from "@/types/category/category.model";
+} from "@/types/product.types";
+import productModel from "@/models/product.model";
+import categoryModel from "@/models/category.model";
 import ProductResponse from "../response/productResponse";
 import { Request, Response } from "express";
 import { umask } from "process";

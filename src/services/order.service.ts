@@ -1,8 +1,9 @@
-import { IOrder } from "../types/oder/oder.types";
-import OrderModel from "../types/oder/order.model";
+import { IOrder } from "../types/oder.types";
+import OrderModel from "../models/order.model";
 import mongoose, { Types } from "mongoose";
 import { subMonths } from "date-fns";
-/** Tạo đơn hàng */
+import OrderResponse from "../response/OrderResponse";
+
 export const createOrder = async (orderData: IOrder) => {
   const newOrder = new OrderModel({
     ...orderData,
@@ -16,24 +17,30 @@ export const createOrder = async (orderData: IOrder) => {
   return await newOrder.save();
 };
 
-/** Lấy tất cả đơn hàng (admin) */
-export const getAllOrders = async () => {
-  return await OrderModel.find()
-    .populate("user", "name email")
-    .sort({ createdAt: -1 });
+export const getAllOrdersService = async (
+  page: number = 1,
+  limit: number = 10
+) => {
+  const skip = (page - 1) * limit;
+  const totalOrders = await OrderModel.countDocuments();
+  const orders = await OrderModel.find()
+    .populate("user", "fullName email")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalPages = Math.ceil(totalOrders / limit);
+  return new OrderResponse(totalOrders, totalPages, page, orders);
 };
 
-/** Lấy đơn hàng theo user */
 export const getOrdersByUserId = async (userId: string | Types.ObjectId) => {
   return await OrderModel.find({ user: userId }).sort({ createdAt: -1 });
 };
 
-/** Lấy chi tiết đơn theo ID */
 export const getOrderById = async (id: string) => {
   return await OrderModel.findById(id).populate("user", "name email");
 };
 
-/** Cập nhật trạng thái đơn */
 export const updateOrderStatus = async (
   orderId: string,
   update: Partial<IOrder>
@@ -46,7 +53,7 @@ export const getRevenueByMonth = async (months: number) => {
   const revenue = await OrderModel.aggregate([
     {
       $match: {
-        isPaid: true, // ✅ sửa ở đây
+        isPaid: true,
         createdAt: { $gte: startDate },
       },
     },

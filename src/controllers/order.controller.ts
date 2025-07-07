@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import {
   createOrder as createOrderService,
-  getAllOrders as getAllOrdersService,
   getOrdersByUserId,
   getOrderById,
   updateOrderStatus as updateOrderStatusService,
   getRevenueByMonth,
 } from "../services/order.service";
+import { getAllOrdersService } from "../services/order.service";
 
 export const createOrder = async (
   req: Request,

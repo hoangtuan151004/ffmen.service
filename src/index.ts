@@ -1,4 +1,4 @@
-import "@/types/user/user.model";
+import "@/models/user.model";
 import express from "express";
 import dotenv from "dotenv";
 import mongoConnect from "./config/MongoConnect";

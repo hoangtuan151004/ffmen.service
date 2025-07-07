@@ -1,6 +1,6 @@
-import CategoryModel, { ICategory } from "@/types/category/category.model";
-import { CreateCategoryInput } from "../types/category/category.types";
-import ProductModel from "@/types/product/product.model";
+import CategoryModel, { ICategory } from "@/models/category.model";
+import { CreateCategoryInput } from "../types/category.types";
+import ProductModel from "@/models/product.model";
 import { Types } from "mongoose";
 import CategoryResponse from "../response/categoryResponse ";
 

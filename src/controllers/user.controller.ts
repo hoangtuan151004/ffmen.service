@@ -1,4 +1,4 @@
-import User from "../types/user/user.model";
+import User from "../models/user.model";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
@@ -96,10 +96,11 @@ export const UpdateUser = async (req: Request, res: Response) => {
 
 // EDIT user (password, roles)
 // This endpoint is for admin to edit user roles and password
-export const EditUser = async (req: Request, res: Response):Promise<any> => {
+export const EditUser = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
-    const { password, roles }: { password?: string; roles?: string[] } = req.body;
+    const { password, roles }: { password?: string; roles?: string[] } =
+      req.body;
 
     const user = await User.findById(id);
     if (!user) {
@@ -114,7 +115,7 @@ export const EditUser = async (req: Request, res: Response):Promise<any> => {
 
     // Cập nhật roles nếu có
     if (roles) {
-      user.roles = roles.map(role => role as any); 
+      user.roles = roles.map((role) => role as any);
     }
 
     await user.save();
@@ -130,7 +131,6 @@ export const EditUser = async (req: Request, res: Response):Promise<any> => {
     });
   }
 };
-
 
 // DELETE USER
 export const DeleteUser = async (req: Request, res: Response) => {

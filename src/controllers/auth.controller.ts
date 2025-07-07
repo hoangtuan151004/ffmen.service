@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Request, RequestHandler, Response } from "express";
-import User from "../types/user/user.model";
+import User from "../models/user.model";
 import { sendResendOtp } from "../utils/sendResendOtp";
 import { sendWelcomeEmail } from "../utils/sendWellcome";
 import { sendWhatsapp } from "../utils/sendWhatsapp";
@@ -196,7 +196,7 @@ export const Register = async (req: Request, res: Response): Promise<any> => {
       email: email.toLowerCase().trim(),
       phoneNumber: formattedPhone,
       password,
-      roles: roles || ["customer"], // 👈 lấy đúng từ client, fallback nếu không có
+      roles: roles || ["customer"],
     });
 
     await sendWelcomeEmail(email, fullName);

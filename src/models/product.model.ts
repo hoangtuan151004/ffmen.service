@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, model } from "mongoose";
-import { IReview, IProduct, IImg, IVariant } from "./product.types";
+import { IReview, IProduct, IImg, IVariant } from "../types/product.types";
 
 interface IProductDoc extends IProduct, Document {}
 
