@@ -41,7 +41,7 @@ export const getOrderById = async (id: string) => {
   return await OrderModel.findById(id).populate("user", "name email");
 };
 
-export const updateOrderStatus = async (
+export const updateOrderStatusService = async (
   orderId: string,
   update: Partial<IOrder>
 ) => {

@@ -3,7 +3,7 @@ import {
   createOrder as createOrderService,
   getOrdersByUserId,
   getOrderById,
-  updateOrderStatus as updateOrderStatusService,
+  updateOrderStatusService,
   getRevenueByMonth,
 } from "../services/order.service";
 import { getAllOrdersService } from "../services/order.service";
@@ -56,7 +56,7 @@ export const getOrdersByUser = async (req: Request, res: Response) => {
 export const getOrderDetail = async (
   req: Request,
   res: Response
-): Promise<Response> => {
+): Promise<any> => {
   try {
     const order = await getOrderById(req.params.id);
 
