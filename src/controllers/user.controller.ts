@@ -1,4 +1,4 @@
-import User from "../models/user.model";
+import User, { UserRole } from "../models/user.model";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
@@ -94,41 +94,94 @@ export const UpdateUser = async (req: Request, res: Response) => {
   }
 };
 
-// EDIT user (password, roles)
-// This endpoint is for admin to edit user roles and password
+// EDIT user (password)
+// This endpoint is for user to edit password
 export const EditUser = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
-    const { password, roles }: { password?: string; roles?: string[] } =
-      req.body;
+    const { password }: { password?: string } = req.body;
 
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "Không tìm thấy người dùng" });
     }
 
-    // Cập nhật password nếu có
+    // Validate password
     if (password) {
-      const hashed = await bcrypt.hash(password, 10);
-      user.password = hashed;
-    }
+      if (password.length < 6) {
+        return res
+          .status(400)
+          .json({ message: "Mật khẩu phải có ít nhất 6 ký tự" });
+      }
 
-    // Cập nhật roles nếu có
-    if (roles) {
-      user.roles = roles.map((role) => role as any);
+      // Gán trực tiếp, middleware sẽ hash
+      user.password = password;
     }
 
     await user.save();
 
     res.status(200).json({
-      message: "Cập nhật người dùng thành công",
-      user,
+      message: "Cập nhật mật khẩu thành công",
     });
   } catch (error) {
     console.error("EditUser Error:", error);
     res.status(500).json({
       message: "Đã xảy ra lỗi máy chủ",
     });
+  }
+};
+
+//EDIT Admin(isActive, roles)
+// This endpoint is for admin to edit user roles and banned user
+export const EditAdmin = async (req: Request, res: Response): Promise<any> => {
+  const {
+    id,
+    roles,
+    isActive,
+  }: { id: string; roles?: string[]; isActive?: boolean } = req.body;
+
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    // Nếu roles được truyền thì cập nhật roles
+    if (roles) {
+      const validRoles = Object.values(UserRole);
+
+      // Kiểm tra từng role trong input, chỉ giữ lại những role hợp lệ
+      const filteredRoles = roles.filter((role) =>
+        validRoles.includes(role as UserRole)
+      );
+
+      // Nếu không có role hợp lệ thì trả lỗi
+      if (filteredRoles.length === 0) {
+        return res.status(400).json({ message: "Danh sách role không hợp lệ" });
+      }
+
+      user.roles = filteredRoles as UserRole[];
+    }
+
+    // Nếu isActive được truyền thì cập nhật isActive
+    if (typeof isActive === "boolean") {
+      user.isActive = isActive;
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Cập nhật người dùng thành công",
+      data: {
+        id: user._id,
+        roles: user.roles,
+        isActive: user.isActive,
+      },
+    });
+  } catch (error) {
+    console.error("Lỗi khi cập nhật người dùng:", error);
+    return res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };
 

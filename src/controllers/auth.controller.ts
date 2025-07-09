@@ -6,7 +6,6 @@ import { sendWelcomeEmail } from "../utils/sendWellcome";
 import { sendWhatsapp } from "../utils/sendWhatsapp";
 import generateOtp from "../utils/generateOtp";
 import { generateToken } from "../utils/generateToken";
-import { SessionData } from "express-session";
 
 const otpStore = new Map<string, string>();
 
@@ -160,7 +159,8 @@ export const VerifyOtpToResetPassword = async (
   }
 };
 
-export const Register = async (req: Request, res: Response): Promise<any> => {
+export const Register = async (
+  req: Request, res: Response): Promise<any> => {
   try {
     const {
       fullName,
@@ -209,7 +209,8 @@ export const Register = async (req: Request, res: Response): Promise<any> => {
 };
 
 // ✅ Đăng nhập
-export const Login = async (req: Request, res: Response): Promise<any> => {
+export const Login = async (
+  req: Request, res: Response): Promise<any> => {
   try {
     const { email, password }: { email: string; password: string } = req.body;
 
@@ -252,7 +253,8 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
 };
 
 // ✅ Đăng xuất
-export const Logout = (req: Request, res: Response): void => {
+export const Logout = (
+  req: Request, res: Response): void => {
   try {
     res.clearCookie("token");
 
