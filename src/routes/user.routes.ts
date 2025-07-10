@@ -15,7 +15,7 @@ const router = express.Router();
 // Chỉ người dùng đăng nhập mới truy cập
 router.get("/user/:id", authenticateToken, GetUserById);
 router.put("/user/:id", authenticateToken, UpdateUser);
-router.put("/user/:id", authenticateToken, EditUser);
+router.post("/user/:id", authenticateToken, EditUser);
 
 // Chỉ admin mới truy cập
 router.get("/", authenticateToken, authorizeAdmin, GetAllUser);

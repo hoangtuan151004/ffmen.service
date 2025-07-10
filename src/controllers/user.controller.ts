@@ -101,12 +101,13 @@ export const EditUser = async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
     const { password }: { password?: string } = req.body;
 
-    const user = await User.findById(id);
+    // 1. Lấy user, nhớ select password vì schema đang select: false
+    const user = await User.findById(id).select("+password");
     if (!user) {
       return res.status(404).json({ message: "Không tìm thấy người dùng" });
     }
 
-    // Validate password
+    // 2. Validate password
     if (password) {
       if (password.length < 6) {
         return res
@@ -114,18 +115,20 @@ export const EditUser = async (req: Request, res: Response): Promise<any> => {
           .json({ message: "Mật khẩu phải có ít nhất 6 ký tự" });
       }
 
-      // Gán trực tiếp, middleware sẽ hash
+      // 3. Gán password mới + markModified để middleware nhận biết thay đổi
       user.password = password;
+      user.markModified("password");
     }
 
+    // 4. Lưu lại user → middleware sẽ tự hash
     await user.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Cập nhật mật khẩu thành công",
     });
   } catch (error) {
     console.error("EditUser Error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Đã xảy ra lỗi máy chủ",
     });
   }

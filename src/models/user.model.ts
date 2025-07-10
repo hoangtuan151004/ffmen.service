@@ -77,7 +77,7 @@ const userSchema: Schema<IUser> = new Schema(
 
 // 4. Middleware hash password trước khi lưu
 userSchema.pre<IUser>("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  // if (!this.isModified("password")) return next(); // bug can't change password 
 
   try {
     const salt = await bcrypt.genSalt(10);
